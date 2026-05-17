@@ -8,6 +8,15 @@ const authHandle: Handle = async ({ event, resolve }) => {
 	return svelteKitHandler({ event, resolve, auth, building });
 };
 
+const sessionHandle: Handle = async ({ event, resolve }) => {
+	const session = await auth.api.getSession({
+		headers: event.request.headers
+	});
+	event.locals.user = session?.user;
+	const response = await resolve(event);
+	return response;
+};
+
 // export const log: Handle = async ({ event, resolve }) => {
 // 	console.log('Before Page hit');
 // 	const response = await resolve(event);
@@ -21,4 +30,4 @@ const authHandle: Handle = async ({ event, resolve }) => {
 // 	return response;
 // };
 
-export const handle = sequence(authHandle);
+export const handle = sequence(authHandle, sessionHandle);
